@@ -13,6 +13,8 @@ from datetime import datetime
 
 from tkhtmlview import HTMLText, RenderHTML
 
+import webbrowser 
+
 def connection(usernameVal,passVal):
 	global mail
 	IMAPURL = ""  # Write the IMAP server you want to connect.
@@ -32,19 +34,24 @@ def connection(usernameVal,passVal):
 	mailTableScreen()
 	
 	
-def mailBody(event, dt, mail):
+def mailBody(dt, mail):
 	selectedUid = dt.get_rows(selected=True)[0].values[0]
 	for msg in mail.fetch(A(uid=selectedUid)):
-		mailTextWindow = ttk.Toplevel(title=f"{msg.subject}", size=[1080,720])
+		# mailTextWindow = ttk.Toplevel(title=f"{msg.subject}", size=[1080,720])
 		
 		# html_label = HTMLText(mailTextWindow, html=f'{msg.html}')
 		# html_label.pack(fill="both", expand=True)
 		# html_label.fit_height()
 
-		mailTextWindow.place_window_center()
-		mailBodyText = ttk.Label(mailTextWindow, text=msg.text)
-		mailBodyText.pack(fill=BOTH, expand=YES)
-		mailTextWindow.mainloop()
+		# mailTextWindow.place_window_center()
+		# mailBodyText = ttk.Label(mailTextWindow, text=msg.text)
+		# mailBodyText.pack(fill=BOTH, expand=YES)
+		# mailTextWindow.mainloop()
+
+		with open("openedMail.html", "w", encoding="utf-8") as f:
+			f.write(msg.html) 
+		webbrowser.open("openedMail.html")  
+		
 
 def mailTableScreen():
 	welcomeFrame.place_forget()
@@ -78,9 +85,14 @@ def mailTableScreen():
 	    bootstyle=PRIMARY,
 	    autofit=True
 	)
-	dt.view.bind("<<TreeviewSelect>>", lambda event: mailBody(event, dt, mail))
+	# Line below can be used to open emails, too.
+	# dt.view.bind("<<TreeviewSelect>>", lambda event: mailBody(event, dt, mail))
+
 	dt.tablecolumns[0].hide()
-	dt.pack(fill=BOTH, expand=YES)
+	dt.pack(fill=Y, expand=YES, side=LEFT,)
+
+	openMailButton = ttk.Button(root, text="Open", style="primary.Outline.TButton", command=partial(mailBody, dt, mail))
+	openMailButton.pack(side=RIGHT, padx=40)
 
 	root.geometry("") # This will resize the window to the size of the new widgets in mail table.
 	return dt
@@ -89,31 +101,31 @@ def loginScreen():
 	s = ttk.Style()
 	s.configure('TFrame', background='#69676E')
 
-	root.columnconfigure(0, weight = 3)
-	root.columnconfigure(1, weight = 3)
+	root.columnconfigure(0, weight=3)
+	root.columnconfigure(1, weight=3)
 
-	welcomeFrame.place(x = 0, y = 0)
+	welcomeFrame.place(x=0, y=0)
 
 	usernameLabel = ttk.Label(welcomeFrame,text="Username: ", bootstyle="inverse-secondary", font=("Times New Roman", 16))
-	usernameLabel.grid(row = 1, column = 0, padx = 15, pady=15)
+	usernameLabel.grid(row=1, column=0, padx=15, pady=15)
 	
 	usernameVal = ttk.StringVar()
 	usernameEntry = ttk.Entry(welcomeFrame, textvariable=usernameVal)
-	usernameEntry.grid(row = 1, column = 1, columnspan = 2, padx = 15, sticky = "ew")
+	usernameEntry.grid(row=1, column=1, columnspan=2, padx=15, sticky="ew")
 
 	passwordLabel = ttk.Label(welcomeFrame,text="Password: ", bootstyle="inverse-secondary", font=("Times New Roman", 16))
-	passwordLabel.grid(row = 2, column = 0, padx = 15, pady=15)
+	passwordLabel.grid(row=2, column=0, padx=15, pady=15)
 	
 	passVal = ttk.StringVar()
 	passwordEntry = ttk.Entry(welcomeFrame, show="*", textvariable=passVal)
-	passwordEntry.grid(row = 2, column = 1, columnspan = 2 , padx = 15,sticky = "ew")
+	passwordEntry.grid(row=2, column=1, columnspan=2 , padx=15,sticky="ew")
 	
 	logo = Image.open("assets/logo.png")
 	tmp = ImageTk.PhotoImage(logo)
 	logo = tk.Label(welcomeFrame,image=tmp)
 
 	logo.image = tmp
-	logo.grid(row = 0, column = 0, columnspan = 3)
+	logo.grid(row=0, column=0, columnspan=3)
 
 	lbtnStyle = ttk.Style()
 	lbtnStyle.configure("primary.Outline.TButton", font=("Times New Roman", 24))
@@ -121,7 +133,7 @@ def loginScreen():
 	loginButton.grid(row=3,column=0, columnspan=3, pady=20)
 	
 
-root = ttk.Window(title = "KangoMail", themename = "pulse",iconphoto = "assets/icon.png", size = [360,410])
+root = ttk.Window(title="KangoMail", themename="pulse",iconphoto="assets/icon.png", size=[360,410])
 welcomeFrame = ttk.Frame(root)
 mail = None 
 def main():
