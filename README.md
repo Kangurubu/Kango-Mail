@@ -8,17 +8,18 @@ Currently the project doesn't offer much, it will be updated.
 - First, add the IMAP server you want to connect to the main.py file.  
 
 Currently not using XOAUTH2, so, you can't connect to ones using XOAUTH2, like your gmail account.  
-
+After that, run the commands below.
 <br />
 
 ```
 pip install -r requirements.txt
 python main.py
 ```
-
+Finally, you also need to change some lines in the ttkbootstrap library files. 
+Look at the libchange.txt document.
 <h1> Images </h1>
 
-<p float="left">
+<p align="center">
   <img src="assets/login.png" height="400" />
   <img src="assets/table.png" height="400" /> 
 </p>
